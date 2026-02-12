@@ -100,7 +100,8 @@
       const formData = new FormData(form);
 
       try {
-        const response = await fetch('/upload', {
+      const response = await fetch('https://unica-3d-backend.onrender.com/upload', {
+
           method: 'POST',
           body: formData
         });
@@ -117,3 +118,4 @@
   </script>
 </body>
 </html>
+
