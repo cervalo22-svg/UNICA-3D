@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Única 3D - Envio de Fotos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,6 +15,7 @@
       min-height: 100vh;
       margin: 0;
     }
+
     .container {
       background: #ffffff;
       padding: 30px;
@@ -22,18 +24,22 @@
       max-width: 500px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
+
     .logo {
       text-align: center;
       margin-bottom: 20px;
     }
+
     .logo img {
       max-width: 180px;
     }
+
     h1 {
       text-align: center;
       margin-bottom: 20px;
       font-size: 22px;
     }
+
     input, textarea, button {
       width: 100%;
       margin-bottom: 15px;
@@ -43,10 +49,12 @@
       border: 1px solid #ddd;
       box-sizing: border-box;
     }
+
     textarea {
       resize: vertical;
       min-height: 80px;
     }
+
     button {
       background: linear-gradient(90deg, #9c4dcc, #3aa6c7);
       color: #fff;
@@ -54,20 +62,30 @@
       cursor: pointer;
       font-weight: bold;
     }
+
     button:hover {
       opacity: 0.9;
     }
+
     #status {
       text-align: center;
       font-size: 14px;
       margin-top: 10px;
     }
+
+    #resultadoImagem {
+      display: none;
+      max-width: 100%;
+      margin-top: 20px;
+      border-radius: 12px;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
+
     <div class="logo">
-      <!-- Coloque sua logo com o nome logo.png na mesma pasta do arquivo -->
       <img src="logo.png" alt="Única 3D" />
     </div>
 
@@ -79,43 +97,60 @@
       <input type="email" name="email" placeholder="E-mail" required />
       <input type="text" name="instagram" placeholder="Instagram (@usuario)" />
 
-      <textarea name="observacao" placeholder="Descreva detalhes que você quer na miniatura (roupa específica, pose, acessório, profissão, estilo de cabelo, etc.)" required></textarea>
+      <textarea
+        name="observacao"
+        placeholder="Descreva detalhes que você quer na miniatura (roupa, pose, acessório, cabelo etc.)"
+        required
+      ></textarea>
 
       <input type="file" name="fotos" accept="image/*" multiple required />
 
       <button type="submit">Enviar fotos</button>
     </form>
 
+    <!-- IMAGEM GERADA -->
+    <img id="resultadoImagem" />
+
+    <!-- STATUS -->
     <p id="status"></p>
+
   </div>
 
   <script>
     const form = document.getElementById('uploadForm');
     const status = document.getElementById('status');
+    const imgResultado = document.getElementById('resultadoImagem');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      status.innerText = 'Enviando dados e fotos...';
+      status.innerText = 'Enviando fotos e gerando imagem...';
+      imgResultado.style.display = 'none';
 
       const formData = new FormData(form);
 
       try {
-      const response = await fetch('https://unica-3d-backend.onrender.com/upload', {
+        const response = await fetch(
+          'https://unica-3d-backend.onrender.com/upload',
+          {
+            method: 'POST',
+            body: formData
+          }
+        );
 
-          method: 'POST',
-          body: formData
-        });
+        const data = await response.json();
 
-        if (response.ok) {
-          status.innerText = 'Recebemos suas fotos! Estamos gerando sua imagem.';
+        if (data.success) {
+          imgResultado.src = 'data:image/png;base64,' + data.imageBase64;
+          imgResultado.style.display = 'block';
+          status.innerText = 'Imagem gerada com sucesso!';
         } else {
-          status.innerText = 'Erro ao enviar. Tente novamente.';
+          status.innerText = 'Erro ao gerar imagem.';
         }
       } catch (err) {
         status.innerText = 'Erro de conexão.';
       }
     });
   </script>
+
 </body>
 </html>
-
